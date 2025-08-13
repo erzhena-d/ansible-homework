@@ -1,0 +1,47 @@
+- hosts: 3.80.36.90
+  become: true
+  tasks:
+  - name: Install the latest version of Apache and MariaDB
+    ansible.builtin.dnf:
+      name:
+        - httpd
+        - mariadb105-server
+        - wget
+        - php
+        - php-mysqlnd
+        - php-fpm
+        - php-mysqli
+        - php-json
+        - php-devel
+      state: latest
+
+  - name: Download the latest version of WordPress
+    ansible.builtin.get_url:
+      url: https://wordpress.org/latest.tar.gz
+      dest: /tmp/latest.tar.gz
+      mode: '0644'
+
+  - name: Extract WordPress
+    ansible.builtin.unarchive:
+      src: /tmp/latest.tar.gz
+      dest: /var/www/html/
+      remote_src: true
+      mode: '0755'
+  
+  - name: Remove index.html
+    ansible.builtin.file:
+      path: /var/www/html/index.html  # Adjust this path to the actual location of index.html
+      state: absent
+
+  - name: Make sure the Apache and mariadb105 services are running
+    ansible.builtin.service:
+      name: "{{ item }}"
+      state: started
+      enabled: true
+    loop:  
+        - httpd
+        - mariadb
+
+  
+
+      
