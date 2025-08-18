@@ -82,7 +82,7 @@
       group: apache
       mode: '0755'
       recurse: true
-    when: ansible_os_family == "Debian"
+    when: ansible_os_family == "Amazon"
  
   - name: Set permissions for WordPress files
     ansible.builtin.file:
