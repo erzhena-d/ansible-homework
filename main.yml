@@ -43,14 +43,12 @@
     ansible.builtin.get_url:
       url: https://wordpress.org/latest.tar.gz
       dest: /tmp/latest.tar.gz
-      mode: '0644'
 
   - name: Extract WordPress
     ansible.builtin.unarchive:
       src: /tmp/latest.tar.gz
       dest: /var/www/html/
       remote_src: true
-      mode: '0755'
   
   - name: Remove index.html
     ansible.builtin.file:
