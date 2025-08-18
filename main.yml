@@ -1,7 +1,9 @@
-- hosts: 3.80.36.90
+- hosts: all
   become: true
   tasks:
-  - name: Install the latest version of Apache and MariaDB
+  - name: Gather OS facts
+    setup:
+  - name: Install packages for Amazon Linux
     ansible.builtin.dnf:
       name:
         - httpd
@@ -13,7 +15,29 @@
         - php-mysqli
         - php-json
         - php-devel
-      state: latest
+      state: present 
+    when: ansible_os_family == "Amazon"
+
+  - name: Install packages for Ubuntu
+    ansible.builtin.apt:
+      name:
+        - apache2 
+        - ghostscript 
+        - libapache2-mod-php 
+        - mysql-server 
+        - php 
+        - php-bcmath 
+        - php-curl 
+        - php-imagick 
+        - php-intl 
+        - php-json 
+        - php-mbstring 
+        - php-mysql 
+        - php-xml 
+        - php-zip
+      state: present 
+      update_cache: yes
+    when: ansible_os_family == "Debian"
 
   - name: Download the latest version of WordPress
     ansible.builtin.get_url:
@@ -33,7 +57,7 @@
       path: /var/www/html/index.html  # Adjust this path to the actual location of index.html
       state: absent
 
-  - name: Make sure the Apache and mariadb105 services are running
+  - name: Make sure the httpd and mariadb105 services are running
     ansible.builtin.service:
       name: "{{ item }}"
       state: started
@@ -41,6 +65,35 @@
     loop:  
         - httpd
         - mariadb
+    when: ansible_os_family == "Amazon"
+
+  - name: Make sure the apache2 and mysql services are running
+    ansible.builtin.service:
+      name: "{{ item }}"
+      state: started
+      enabled: true
+    loop:  
+        - apache2
+        - mysql
+    when: ansible_os_family == "Debian"
+
+  - name: Set permissions for WordPress files
+    ansible.builtin.file:
+      path: /var/www/html/wordpress
+      owner: apache
+      group: apache
+      mode: '0755'
+      recurse: true
+    when: ansible_os_family == "Debian"
+ 
+  - name: Set permissions for WordPress files
+    ansible.builtin.file:
+      path: /var/www/html/wordpress
+      owner: www-data
+      group: www-data
+      mode: '0755'
+      recurse: true
+    when: ansible_os_family == "Debian"
 
   
 
