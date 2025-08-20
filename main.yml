@@ -3,6 +3,7 @@
   tasks:
   - name: Gather OS facts
     setup:
+
   - name: Install packages for Amazon Linux
     ansible.builtin.dnf:
       name:
@@ -18,44 +19,7 @@
       state: present 
     when: ansible_os_family == "Amazon"
 
-  - name: Install packages for Ubuntu
-    ansible.builtin.apt:
-      name:
-        - apache2 
-        - ghostscript 
-        - libapache2-mod-php 
-        - mysql-server 
-        - php 
-        - php-bcmath 
-        - php-curl 
-        - php-imagick 
-        - php-intl 
-        - php-json 
-        - php-mbstring 
-        - php-mysql 
-        - php-xml 
-        - php-zip
-      state: present 
-      update_cache: yes
-    when: ansible_os_family == "Debian"
-
-  - name: Download the latest version of WordPress
-    ansible.builtin.get_url:
-      url: https://wordpress.org/latest.tar.gz
-      dest: /tmp/latest.tar.gz
-
-  - name: Extract WordPress
-    ansible.builtin.unarchive:
-      src: /tmp/latest.tar.gz
-      dest: /var/www/html/
-      remote_src: true
-  
-  - name: Remove index.html
-    ansible.builtin.file:
-      path: /var/www/html/index.html  # Adjust this path to the actual location of index.html
-      state: absent
-
-  - name: Make sure the httpd and mariadb105 services are running
+  - name: Start and enable httpd and mariadb services
     ansible.builtin.service:
       name: "{{ item }}"
       state: started
@@ -65,33 +29,65 @@
         - mariadb
     when: ansible_os_family == "Amazon"
 
-  - name: Make sure the apache2 and mysql services are running
-    ansible.builtin.service:
-      name: "{{ item }}"
-      state: started
-      enabled: true
-    loop:  
-        - apache2
-        - mysql
-    when: ansible_os_family == "Debian"
+  - name: Download the latest version of WordPress
+    ansible.builtin.get_url:
+      url: https://wordpress.org/latest.tar.gz
+      dest: /tmp/latest.tar.gz
 
-  - name: Set permissions for WordPress files
-    ansible.builtin.file:
-      path: /var/www/html/wordpress
+  - name: Extract WordPress
+    ansible.builtin.unarchive:
+      src: /tmp/latest.tar.gz
+      dest: /tmp
+      remote_src: true
+
+  - name: Copy files from the WordPress directory to the web root
+    ansible.builtin.copy:
+      src: /tmp/wordpress/
+      dest: /var/www/html
       owner: apache
       group: apache
       mode: '0755'
-      recurse: true
+      remote_src: true
     when: ansible_os_family == "Amazon"
- 
-  - name: Set permissions for WordPress files
+  
+  - name: Remove index.html
     ansible.builtin.file:
-      path: /var/www/html/wordpress
-      owner: www-data
-      group: www-data
-      mode: '0755'
-      recurse: true
-    when: ansible_os_family == "Debian"
+      path: /var/www/html/index.html  # Adjust this path to the actual location of index.html
+      state: absent
+
+  - name: Make sure the httpd and mariadb105 services are running
+    ansible.builtin.service:
+      name: "{{ item }}"
+      state: restarted
+      enabled: true
+    loop:  
+        - httpd
+        - mariadb
+    when: ansible_os_family == "RedHat"
+
+  - name: install PyMySQL
+    ansible.builtin.dnf:
+      name: python3-pymysql
+      state: present
+      update_cache: yes
+    when: ansible_os_family == "RedHat"
+
+  - name: Create a database
+    community.mysql.mysql_db:
+      name: queen
+      state: present
+      login_unix_socket: /var/lib/mysql/mysql.sock
+    when: ansible_os_family == "RedHat"
+
+  - name: Create a database user and grant privileges
+    community.mysql.mysql_user:
+      name: freddie
+      password: freddie123
+      priv: "queen.*:ALL"
+      state: present
+    when: ansible_os_family == "RedHat"
+
+ 
 
   
 
