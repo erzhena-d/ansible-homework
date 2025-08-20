@@ -1,0 +1,8 @@
+
+- name: Install php packages for Ubuntu
+  ansible.builtin.apt:
+    name: "{{ packages1 }}"
+
+- name: Install php packages for Amazon Linux
+  ansible.builtin.dnf:
+    name: "{{ packages2 }}"

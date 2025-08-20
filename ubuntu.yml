@@ -1,99 +1,27 @@
 #ubuntu       - debian family;   apt;       apache2;    mysql-server;         www-data;  
 #amazon linux - redhat family;   yum/dnf;   httpd;      mariadb105-server;    apache;  
 
-- hosts: 13.218.77.181
+- hosts: all
   become: true
   tasks:
   - name: Gather OS facts
     setup:
-  - name: Install packages for Ubuntu
-    ansible.builtin.apt:
-      name:
-        - apache2 
-        - ghostscript 
-        - libapache2-mod-php 
-        - mysql-server 
-        - php 
-        - php-bcmath 
-        - php-curl 
-        - php-imagick 
-        - php-intl 
-        - php-json 
-        - php-mbstring 
-        - php-mysql 
-        - php-xml 
-        - php-zip
-      state: present 
-      update_cache: yes
-    when: ansible_os_family == "Debian"
+    
+  roles:
+    - apache
+    - php
+    - wordpress
+    - database
 
-  - name: Start and enable apache2 and mysql services
-    ansible.builtin.service:
-      name: "{{ item }}"
-      state: started
-      enabled: true
-    loop:  
-        - apache2
-        - mysql
-    when: ansible_os_family == "Debian"
 
-  - name: Download the latest version of WordPress
-    ansible.builtin.get_url:
-      url: https://wordpress.org/latest.tar.gz
-      dest: /tmp
+    
+   
 
-  - name: Extract WordPress
-    ansible.builtin.unarchive:
-      src: /tmp/latest.tar.gz
-      dest: /tmp
-      remote_src: true
 
-  - name: Copy files from the WordPress directory to the web root
-    ansible.builtin.copy:
-      src: /tmp/wordpress/
-      dest: /var/www/html
-      owner: www-data
-      group: www-data
-      mode: '0755'
-      remote_src: true
-    when: ansible_os_family == "Debian"
-  
-  - name: Remove index.html
-    ansible.builtin.file:
-      path: /var/www/html/index.html  # Adjust this path to the actual location of index.html
-      state: absent
 
-  - name: Make sure the apache2 and mysql services are running
-    ansible.builtin.service:
-      name: "{{ item }}"
-      state: restarted
-      enabled: true
-    loop:  
-        - apache2
-        - mysql
-    when: ansible_os_family == "Debian"
 
-  - name: install PyMySQL
-    ansible.builtin.apt:
-      name: python3-pymysql
-      state: present
-      update_cache: yes
-    when: ansible_os_family == "Debian"
 
-  - name: Create a database
-    community.mysql.mysql_db:
-      name: beatles
-      state: present
-      login_unix_socket: /run/mysqld/mysqld.sock
-    when: ansible_os_family == "Debian"
 
-  - name: Create a user and grant privileges
-    community.mysql.mysql_user:
-      name: john
-      password: john123
-      priv: "beatles.*:ALL"
-      state: present
-      login_unix_socket: /run/mysqld/mysqld.sock
 
  
 

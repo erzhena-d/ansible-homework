@@ -1,8 +1,0 @@
-- hosts: all
-  become: true
-  tasks:
-  - name: Gather OS facts
-    degub: msg="{{ ansible_distribution }}"
-  - name: 
-
-  

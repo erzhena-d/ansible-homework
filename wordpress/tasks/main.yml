@@ -1,0 +1,82 @@
+  - name: Download the latest version of WordPress
+    ansible.builtin.get_url:
+      url: https://wordpress.org/latest.tar.gz
+      dest: /tmp
+
+  - name: Extract WordPress
+    ansible.builtin.unarchive:
+      src: /tmp/latest.tar.gz
+      dest: /tmp
+      remote_src: true
+
+  - name: Copy files from the WordPress directory to the web root
+    ansible.builtin.copy:
+      src: /tmp/wordpress/
+      dest: /var/www/html
+      owner: www-data
+      group: www-data
+      mode: '0755'
+      remote_src: true
+    when: ansible_os_family == "Debian"
+
+  - name: Remove index.html
+    ansible.builtin.file:
+      path: /var/www/html/index.html  # Adjust this path to the actual location of index.html
+      state: absent
+
+  - name: Copy config file
+    ansible.builtin.template:
+      src: wordpress/templates/wp-config.php.j2
+      dest: /var/www/html/wp-config.php
+
+  - name: Make sure the apache2 and mysql services are running
+    ansible.builtin.service:
+      name: "{{ item }}"
+      state: restarted
+      enabled: true
+    loop:  
+        - apache2
+        - mysql
+    when: ansible_os_family == "Debian"
+
+#####LINUX
+  - name: Download the latest version of WordPress
+    ansible.builtin.get_url:
+      url: https://wordpress.org/latest.tar.gz
+      dest: /tmp/latest.tar.gz
+
+  - name: Extract WordPress
+    ansible.builtin.unarchive:
+      src: /tmp/latest.tar.gz
+      dest: /tmp
+      remote_src: true
+
+  - name: Copy files from the WordPress directory to the web root
+    ansible.builtin.copy:
+      src: /tmp/wordpress/
+      dest: /var/www/html
+      owner: apache
+      group: apache
+      mode: '0755'
+      remote_src: true
+    when: ansible_os_family == "RedHat"
+  
+  - name: Remove index.html
+    ansible.builtin.file:
+      path: /var/www/html/index.html  # Adjust this path to the actual location of index.html
+      state: absent
+
+  - name: Copy config file
+    ansible.builtin.template:
+      src: wordpress/templates/wp-config.php.j2
+      dest: /var/www/html/wp-config.php
+
+  - name: Make sure services are running
+    ansible.builtin.service:
+      name: "{{ item }}"
+      state: restarted
+      enabled: true
+    loop:  
+        - httpd
+        - mariadb
+    when: ansible_os_family == "RedHat"

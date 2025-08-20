@@ -1,0 +1,22 @@
+packages1:
+  - ghostscript 
+  - libapache2-mod-php 
+  - php 
+  - php-bcmath 
+  - php-curl 
+  - php-imagick 
+  - php-intl 
+  - php-json 
+  - php-mbstring 
+  - php-mysql 
+  - php-xml 
+  - php-zip
+
+packages2:
+  - wget
+  - php
+  - php-mysqlnd
+  - php-fpm
+  - php-mysqli
+  - php-json
+  - php-devel

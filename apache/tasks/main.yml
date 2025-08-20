@@ -1,0 +1,25 @@
+- name: Install apache
+  ansible.builtin.apt:
+    name: "{{ package1 }} "
+    state: present
+    update_cache: yes
+
+- name: Start service apache2
+  ansible.builtin.service:
+    name: "{{ package1 }}"
+    state: started
+    enabled: true
+
+- name: Install httpd
+  ansible.builtin.dnf:
+    name: "{{ package2 }}"
+    state: present
+    update_cache: yes
+  when: ansible_os_family == "RedHat"
+
+- name: start service httpd
+  ansible.builtin.service:
+    name: "{{ package2 }}"
+    state: started
+    enabled: true
+  when: ansible_os_family == "RedHat"
