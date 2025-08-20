@@ -1,8 +1,9 @@
-
 - name: Install php packages for Ubuntu
   ansible.builtin.apt:
     name: "{{ packages1 }}"
+  when: ansible_os_family == "Debian"  
 
 - name: Install php packages for Amazon Linux
   ansible.builtin.dnf:
     name: "{{ packages2 }}"
+  when: ansible_os_family == "RedHat"

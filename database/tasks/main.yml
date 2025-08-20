@@ -2,12 +2,14 @@
     ansible.builtin.apt:
       name: 
         - mysql-server 
+    when: ansible_os_family == "Debian"
 
   - name: Start service, if not started
     ansible.builtin.service:
       name: mysql
       state: started
       enabled: true
+    when: ansible_os_family == "Debian"
 
   - name: install PyMySQL
     ansible.builtin.apt:
@@ -30,6 +32,7 @@
       priv: "*.*:ALL"
       state: present
       login_unix_socket: /run/mysqld/mysqld.sock
+    when: ansible_os_family == "Debian"
 
   - name: Install database for Amazon Linux
     ansible.builtin.dnf:
