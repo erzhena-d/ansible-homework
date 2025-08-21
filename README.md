@@ -7,6 +7,7 @@ It supports both **Debian/Ubuntu** and **Red Hat / Amazon Linux** families.
 ---
 <details>
 <summary>📂 Project Structure</summary>
+```plaintext
 .
 ├── README.md                   # Project documentation and usage instructions
 ├── ansible.cfg                 # Ansible configuration file
