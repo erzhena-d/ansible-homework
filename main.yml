@@ -1,7 +1,7 @@
 #ubuntu       - debian family;   apt;       apache2;    mysql-server;         www-data;  
 #amazon linux - redhat family;   yum/dnf;   httpd;      mariadb105-server;    apache;  
 
-- hosts: redhat
+- hosts: all
   become: true
   gather_facts: yes
     

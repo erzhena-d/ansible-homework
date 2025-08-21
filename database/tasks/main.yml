@@ -62,16 +62,16 @@
 
 - name: Create a database
   community.mysql.mysql_db:
-    name: queen
+    name: "{{ database_name}}"
     state: present
     login_unix_socket: /var/lib/mysql/mysql.sock
   when: ansible_os_family == "RedHat"
 
 - name: Create a database user and grant privileges
   community.mysql.mysql_user:
-    name: freddie
-    password: freddie123
-    priv: "queen.*:ALL"
+    name: "{{ database_user }}"
+    password: "{{ database_password }}"
+    priv: "*.*:ALL"
     state: present
     login_unix_socket: /var/lib/mysql/mysql.sock
   when: ansible_os_family == "RedHat"

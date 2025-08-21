@@ -7,7 +7,7 @@ hostnames:
 
 groups: #make sure to add correct tags
   redhat: "'redhat' in tags.OS"
-  ubuntu: "'debian' in tags.OS"
+  ubuntu: "'ubuntu' in tags.OS"
 
 
 
