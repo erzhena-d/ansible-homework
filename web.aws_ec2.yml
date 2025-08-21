@@ -1,12 +1,28 @@
-plugin: amazon.aws.aws_ec2
+plugin: amazon.aws.aws_ec2 # AWS EC2 Dynamic Inventory plugin
 regions: 
   - us-east-1
+
+hostnames: 
+  - ip-address
+
+groups: #make sure to add correct tags
+  redhat: "'redhat' in tags.OS"
+  ubuntu: "'debian' in tags.OS"
+
+
+
+
+
 
 # filters:
 #     tag:Name:
 #      - ubuntu
 #      - linux 
 
-keyed_groups:
-  - key: tags
+  # keyed_groups:
+#   - prefix: az
+#     key: placement.availability_zone
+#   - key: tags
 
+# compose:
+#   ansible_user: "{{ 'ubuntu' if 'ubuntu' in tags.Name | lower else 'ec2-user' }}"

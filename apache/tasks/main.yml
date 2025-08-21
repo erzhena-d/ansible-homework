@@ -1,6 +1,6 @@
 - name: Install apache
   ansible.builtin.apt:
-    name: "{{ package1 }} "
+    name: "{{ package1 }}"
     state: present
     update_cache: yes
   when: ansible_os_family == "Debian"
@@ -16,7 +16,6 @@
   ansible.builtin.dnf:
     name: "{{ package2 }}"
     state: present
-    update_cache: yes
   when: ansible_os_family == "RedHat"
 
 - name: start service httpd
